@@ -1,0 +1,105 @@
+// Worker shares the same Prisma schema as the server
+// This is a symlink placeholder - in Docker, the schema is copied from server
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+model User {
+  id        String   @id @default(cuid())
+  email     String   @unique
+  password  String
+  name      String
+  avatar    String?
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  portfolios Portfolio[]
+  alerts     Alert[]
+
+  @@map("users")
+}
+
+model Portfolio {
+  id        String   @id @default(cuid())
+  name      String
+  userId    String   @map("user_id")
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  user     User      @relation(fields: [userId], references: [id], onDelete: Cascade)
+  holdings Holding[]
+
+  @@map("portfolios")
+}
+
+model Holding {
+  id          String   @id @default(cuid())
+  portfolioId String   @map("portfolio_id")
+  coinId      String   @map("coin_id")
+  symbol      String
+  name        String
+  quantity    Float
+  avgBuyPrice Float    @map("avg_buy_price")
+  createdAt   DateTime @default(now()) @map("created_at")
+  updatedAt   DateTime @updatedAt @map("updated_at")
+
+  portfolio Portfolio @relation(fields: [portfolioId], references: [id], onDelete: Cascade)
+
+  @@unique([portfolioId, coinId])
+  @@map("holdings")
+}
+
+model Alert {
+  id          String         @id @default(cuid())
+  userId      String         @map("user_id")
+  coinId      String         @map("coin_id")
+  symbol      String
+  targetPrice Float          @map("target_price")
+  condition   AlertCondition
+  isActive    Boolean        @default(true) @map("is_active")
+  isTriggered Boolean        @default(false) @map("is_triggered")
+  triggeredAt DateTime?      @map("triggered_at")
+  createdAt   DateTime       @default(now()) @map("created_at")
+  updatedAt   DateTime       @updatedAt @map("updated_at")
+
+  user User @relation(fields: [userId], references: [id], onDelete: Cascade)
+
+  @@map("alerts")
+}
+
+enum AlertCondition {
+  ABOVE
+  BELOW
+}
+
+model PriceHistory {
+  id        String   @id @default(cuid())
+  coinId    String   @map("coin_id")
+  symbol    String
+  price     Float
+  volume    Float    @default(0)
+  marketCap Float    @default(0) @map("market_cap")
+  change24h Float    @default(0) @map("change_24h")
+  timestamp DateTime @default(now())
+
+  @@index([coinId, timestamp])
+  @@map("price_history")
+}
+
+model Coin {
+  id        String   @id
+  symbol    String
+  name      String
+  image     String?
+  rank      Int      @default(0)
+  createdAt DateTime @default(now()) @map("created_at")
+  updatedAt DateTime @updatedAt @map("updated_at")
+
+  @@map("coins")
+}
