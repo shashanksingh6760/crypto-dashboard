@@ -43,7 +43,7 @@ CryptoIntel is a comprehensive SaaS platform designed for traders and crypto ent
 
 ```mermaid
 graph TD
-    Client[React Client (Vite + Zustand)] <-->|REST API| Server[Express.js Server]
+    Client <-->|REST API| Server[Express.js Server]
     Client <-->|WebSockets| Server
     Server <-->|Prisma ORM| DB[(PostgreSQL / SQLite)]
     Server <-->|Pub/Sub & Cache| Redis[(Redis / Memory)]
