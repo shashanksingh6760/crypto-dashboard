@@ -191,17 +191,6 @@ VITE_API_URL=http://localhost:4000
 VITE_WS_URL=http://localhost:4000
 ```
 
----
-
-## 📸 Screenshots
-
-*(Replace with actual image links)*
-- **Live Market Dashboard:** `[Insert Link]`
-- **Coin Details & Analytics:** `[Insert Link]`
-- **Portfolio Tracker:** `[Insert Link]`
-- **Real-Time Alerts:** `[Insert Link]`
-
----
 
 ## 🔑 Demo Credentials
 
